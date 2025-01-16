@@ -1,0 +1,46 @@
+SELECT *
+FROM JanSales;
+
+SELECT COUNT(orderID)
+FROM JanSales
+WHERE length(orderID) = 6
+AND orderID <> 'Order ID';
+
+SELECT COUNT(orderID)
+FROM JanSales
+WHERE length(orderID) = 6
+AND orderID <> 'Order ID'
+AND product='iPhone';
+
+SELECT distinct acctnum
+FROM customers
+JOIN FebSales
+ON FebSales.orderID=customers.order_id
+WHERE length(orderID) = 6
+AND orderID <> 'Order ID';
+
+SELECT product, min(price)
+FROM JanSales
+WHERE length(orderID) = 6
+AND orderID <> 'Order ID';
+
+SELECT product, SUM(quantity)*price as revenue
+FROM JanSales
+GROUP BY product;
+
+SELECT product, location, SUM(quantity), SUM(quantity)*price as revenue
+FROM FebSales
+WHERE location='548 Lincoln St, Seattle, WA 98101'
+GROUP BY product;
+
+SELECT
+COUNT(distinct customers.acctnum) 
+,AVG(quantity*price)
+,orderID
+FROM FebSales
+LEFT JOIN customers
+ON Febsales.orderID=customers.order_id
+WHERE quantity >'2'
+AND length(orderid) = 6
+AND orderid <> 'Order ID';
+
