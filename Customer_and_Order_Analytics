@@ -53,3 +53,119 @@ WHERE quantity >'2'
 AND length(orderid) = 6
 AND orderid <> 'Order ID';
 
+--List all the products sold in Los Angeles in February, and include how many of each were sold.
+SELECT Product
+,SUM(Quantity)
+,location
+FROM FebSales
+WHERE location like '%Los Angeles%'
+GROUP BY Product;
+--Which locations in New York received at least 3 orders in January, and how many orders did they each receive?
+SELECT location
+,SUM(quantity)
+FROM JanSales
+WHERE location like '%NY%'
+AND length(orderid) = 6 
+AND orderid <> 'Order ID'
+GROUP BY location
+HAVING SUM(quantity)>=3;
+
+--How many of each type of headphone were sold in February?
+SELECT SUM(Quantity)
+,Product
+FROM FebSales
+WHERE Product like '%headphone%'
+AND length(orderid) = 6 
+AND orderid <> 'Order ID'
+GROUP BY Product;
+
+--What was the average amount spent per account in February? 
+SELECT AVG(quantity*price)
+FROM FebSales
+LEFT JOIN customers
+ON FebSales.orderID=customers.order_id
+WHERE length(orderid) = 6 
+AND orderid <> 'Order ID';
+
+--What was the average quantity of products purchased per account in February?
+SELECT SUM(quantity)/count(customers.acctnum)
+FROM FebSales
+LEFT JOIN customers
+ON FebSales.orderID=customers.order_id
+WHERE length(orderid) = 6 
+AND orderid <> 'Order ID';
+
+--Which product brought in the most revenue in January and how much revenue did it bring in total?
+SELECT Product
+,SUM(quantity)*price AS total_revenue
+FROM JanSales
+GROUP BY Product
+ORDER BY total_revenue desc
+LIMIT 1
+
+# For this project, I downloaded Spotify data from Kaggle.
+# Then I created a table to insert Spotify data into.
+# Finally, I performed analytics on the data using SQL. 
+
+#Creating the table: 
+CREATE TABLE BIT_DB.Spotifydata (
+id integer PRIMARY KEY,
+artist_name varchar NOT NULL,
+track_name varchar NOT NULL,
+track_id varchar NOT NULL,
+popularity integer NOT NULL,
+danceability decimal(4,3) NOT NULL,
+energy decimal(4,3) NOT NULL,
+key integer NOT NULL,
+loudness decimal(5,3) NOT NULL,
+mode integer NOT NULL,
+speechiness decimal(5,4) NOT NULL,
+acousticness decimal(6,5) NOT NULL,
+instrumentalness text NOT NULL,
+liveness decimal(5,4) NOT NULL,
+valence decimal(4,3) NOT NULL,
+tempo decimal(6,3) NOT NULL,
+duration_ms integer NOT NULL,
+time_signature integer NOT NULL 
+)
+
+#Then I inserted the Spotify Data .csv into the table.
+
+#Next, I explored the data using the following SQL. 
+
+--Which artists have multiple songs in the top 50 and how many do they have?
+SELECT distinct artist_name as Artist
+,COUNT(track_name) as total_tracks
+FROM Spotifydata
+GROUP BY artist_name
+ORDER BY total_tracks DESC;
+
+--What were the 10 most popular songs and their artist?
+SELECT popularity
+,track_name
+,artist_name
+FROM Spotifydata
+ORDER BY popularity desc LIMIT 10;
+
+--What's the avg popularity, danceability, and energy by artist and track. 
+SELECT
+artist_name
+,track_name
+,avg(popularity)
+,avg(danceability)
+,avg(energy)
+FROM Spotifydata
+GROUP BY artist_name, track_name;
+
+--Which artist recorded the shortest song?
+SELECT artist_name
+,MIN(duration_ms)
+FROM Spotifydata;
+
+--Which song key had the most songs in the top 50?
+SELECT song_key
+,COUNT(song_key)
+FROM Spotifydata
+GROUP BY song_key 
+ORDER BY COUNT(song_key) DESC
+
