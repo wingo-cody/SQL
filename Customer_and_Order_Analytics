@@ -169,3 +169,37 @@ FROM Spotifydata
 GROUP BY song_key 
 ORDER BY COUNT(song_key) DESC
 
+#Bike lanes with an average safety rating of 4 or more should be labeled "Leave As-Is".
+#Bike lanes with an average safety rating of less than 2.5 should be labeled as "Remove".
+#All other bike lanes should be labeled as "Improvements Needed".
+
+SELECT street, safetyrating,
+AVG(safetyrating) OVER (PARTITION BY street) as "Average_safety_rating",
+CASE WHEN AVG(safetyrating) OVER(PARTITION BY street) >= 4 THEN "Leave As-Is"
+    WHEN AVG(safetyrating) OVER(PARTITION BY street) < 2.5 THEN "Remove"
+    ELSE "Improvements Needed"
+END AS "Recommendation"
+FROM CityBikeLanes;
+
+#Show Customers (their full names, customer ID, and country) who are not in the US.
+SELECT FirstName, 
+LastName, 
+CustomerId, 
+Country
+FROM chinook.customers
+WHERE Country != 'USA';
+
+#Show only the Customers from Brazil.
+SELECT *
+FROM chinook.customers
+WHERE Country='Brazil';
+
+#Show the Employees who are Sales Agents.
+SELECT *
+FROM chinook.employees
+WHERE Title='Sales Support Agent';
+
+#How many Invoices were there in 2009?
+SELECT DISTINCT COUNT(*)
+FROM chinook.invoices
+WHERE InvoiceDate LIKE '%2009%';
